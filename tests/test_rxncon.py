@@ -12,24 +12,25 @@ from rxnconcompiler.rxncon import Rxncon
 class RxnconTests(TestCase):
     """
     Unit tests for Rxncon class.
-    Tests top rxncon objects.              
+    Tests top rxncon objects.
     """
     def setUp(self):
         """
         Prepares data for tests.
         """
         # basic reaction.
-        self.basic = Rxncon('A_ppi_B')  
+        print "HIER"
+        self.basic = Rxncon('A_ppi_B')
 
         # basic reaction with one contingency.
-        self.basic_cont = Rxncon('A_ppi_B; ! A--C')  
-        
+        self.basic_cont = Rxncon('A_ppi_B; ! A--C')
+
         # boolean contingencies allow to define complexes
         # and include in contingencies molecules that are not a part of reaction.
-        self.bool = Rxncon('A_ppi_B; ! <b>\n<b>; AND A--C; AND C--D') 
+        self.bool = Rxncon('A_ppi_B; ! <b>\n<b>; AND A--C; AND C--D')
 
         # reaction with many contingencies.
-        self.cont = Rxncon('A_ppi_B; ! A-{P}; K+ B-{Ub}; x B--G') 
+        self.cont = Rxncon('A_ppi_B; ! A-{P}; K+ B-{Ub}; x B--G')
 
         # reaction with only x (inhibitory) contingncy
         self.cont_x = Rxncon('A_ppi_B; x A-{P}; x B-{Ub}; x B--G')
@@ -39,20 +40,21 @@ class RxnconTests(TestCase):
 
     def test_molecule_pool(self):
         """
-        Tests that molecules_pool is created and 
+        Tests that molecules_pool is created and
         containe right number of molecules.
         """
         ### Basic reaction.
-        self.assertEqual(len(self.basic.molecule_pool), 2)    
+        self.assertEqual(len(self.basic.molecule_pool), 2)
+
 
         ### Basic reaction with one contingency.
-        # molecules from contingencies (only). 
+        # molecules from contingencies (only).
         # are not automatically included in molecules_pool.
         self.assertEqual(len(self.basic_cont.molecule_pool), 2)
 
     def test_reaction_pool(self):
         """
-        Tests that reaction_pool is created 
+        Tests that reaction_pool is created
         and contains ReactionContaiers with Reactions.
         """
         ### Basic reaction.
@@ -76,7 +78,7 @@ class RxnconTests(TestCase):
         self.assertEqual(len(self.basic.contingency_pool), 0)
 
         ### Basic reaction with one contingency.
-        # number of contingencies in the pool == number of reactions with contingencies 
+        # number of contingencies in the pool == number of reactions with contingencies
         # one root contingency present in reaction_pool.
         self.assertEqual(len(self.basic_cont.contingency_pool), 1)
         # the root contingency has one child.
@@ -86,7 +88,7 @@ class RxnconTests(TestCase):
         # boolean contingencies can have children (matrioszki)
         # one root contingency
         self.assertEqual(len(self.bool.contingency_pool), 1)
-        # the root contingency has one child - bool contingency 
+        # the root contingency has one child - bool contingency
         self.assertEqual(len(self.bool.contingency_pool['A_ppi_B'].children), 1)
         # the boolean contingency has two children
         self.assertEqual(len(self.bool.contingency_pool['A_ppi_B'].children[0].children), 2)
@@ -100,18 +102,18 @@ class RxnconTests(TestCase):
         ### Basic reaction with one contingency.
         # complex_pool is empty.
         self.assertEqual(len(self.basic_cont.complex_pool), 0)
-       
+
         ### Boolean contingency.
         # one AlternativeComplexes present in the complex_pool.
         self.assertEqual(len(self.bool.complex_pool), 1)
         # one BiologicalComplex present in AlternativeComplexes
         self.assertEqual(len(self.bool.complex_pool['<b>']), 1)
-        # three Molecule[a] present in BiologicalComplex. 
+        # three Molecule[a] present in BiologicalComplex.
         self.assertEqual(len(self.bool.complex_pool['<b>'][0]), 3)
 
     def test_run_process(self):
         """
-        Tests that after runing process 
+        Tests that after runing process
         (process is 'propagatting' rxncon reactions and contingencies)
         - complexes are applied
         - contingencies are applied
@@ -166,7 +168,7 @@ class RxnconTests(TestCase):
 
 class BnglTests(TestCase):
     """
-    Tests that based on rxncon objects 
+    Tests that based on rxncon objects
     bngl string can be created.
     """
     def setUp(self):

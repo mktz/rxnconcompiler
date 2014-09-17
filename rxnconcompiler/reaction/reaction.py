@@ -19,7 +19,7 @@ from rxnconcompiler.molecule.molecule import Molecule
 from rxnconcompiler.biological_complex.biological_complex import BiologicalComplex
 from rxnconcompiler.contingency.contingency import Contingency
 
-#TODO: should modifiers be the same object 
+#TODO: should modifiers be the same object
 #      in the reaction (no substrat and product)?
 #      and perhaps even across the reactions in the container?
 
@@ -64,8 +64,8 @@ class Reaction:
         #for prod in self.product_complexes:
         #    prod.inspect()
         #print "Input conditions: %s" % str(self.conditions)
-        #print "Changed state:    %s" % str(self.to_change) 
-        #print "Reaction rate:    %s" % str(self.rate) 
+        #print "Changed state:    %s" % str(self.to_change)
+        #print "Reaction rate:    %s" % str(self.rate)
 
 
     def run_reaction(self):
@@ -75,7 +75,7 @@ class Reaction:
         - updates substrate complexes
           (e.g.: TRSC has in substrate 2 complexes: polymerase and gene,
                   needs to be updated to just polymerase).
-        - creates and adds product complexes 
+        - creates and adds product complexes
         """
         pass
 
@@ -114,7 +114,7 @@ class Reaction:
     def get_contingencies(self):
         """
         Returns contingencies list.
-        Contingencies define a context for a given reaction. 
+        Contingencies define a context for a given reaction.
         """
         result = []
         for compl in self.substrat_complexes:
@@ -135,9 +135,9 @@ class Reaction:
         """
         Finds left and right complex in substrate_complexes.
 
-        @param side: 'L', 'R', or 'LR' (stends for Left and Right)  
+        @param side: 'L', 'R', or 'LR' (stends for Left and Right)
         @type side: string
-    
+
         @return: left or right complex.
         @rtype: BiologicalComplex.
         """
@@ -177,21 +177,21 @@ class Reaction:
         Returns product state as a contingency:
         x if state is destroyed
         ! if state is produced
-        """ 
+        """
         return Contingency(self.name, '!', self.to_change)
 
     def get_source_contingency(self):
         """
         Returns source state as a contingency
         """
-        return Contingency(self.name, 'x', self.to_change)      
+        return Contingency(self.name, 'x', self.to_change)
 
     def get_modifier(self):
         """
         Returns a list of complexes that don't change during the reaction.
 
         """
-        return []    
+        return []
 
     @property
     def main_id(self):
@@ -200,16 +200,16 @@ class Reaction:
         1_1 ---> 1
         120_1 ---> 120
         33 ---> 33
-        """  
-        return str(self.rid).split('_')[0]    
-        
+        """
+        return str(self.rid).split('_')[0]
+
 
 class Interaction(Reaction):
     """"""
     def run_ipi_reaction(self):
         """
         Creates product_complexes.
-        ipi has separate function because it is special - 
+        ipi has separate function because it is special -
         has only one substrate complex (the same protein, a bond inside is added).
         """
         comp = self.substrat_complexes[0].clone()
@@ -254,7 +254,7 @@ class Modification(Reaction):
         A substrate complex is returned.
         (it is the same as product but has different _id)
         """
-        lcompl = self.get_substrate_complex('L')  
+        lcompl = self.get_substrate_complex('L')
         if lcompl:
             return [lcompl]
         return []
@@ -275,11 +275,11 @@ class Modification(Reaction):
 
             if '-' in self.rtype or self.rtype in ['gap']:
                 prmol.remove_modification(self.to_change)
-            else:  
+            else:
                 prmol.add_modification(self.to_change)
-     
+
             self.product_complexes.append(prcomp)
-   
+
             if len(self.substrat_complexes) == 2 and self.rtype != 'pt':
 
                 lcomp = self.get_substrate_complex('L')
@@ -289,7 +289,7 @@ class Modification(Reaction):
         # add input to the reaction e.g. [Start]
         input_complex = self.get_substrate_complex('Z')
         if input_complex:
-            self.product_complexes.append(input_complex)   
+            self.product_complexes.append(input_complex)
 
     def run_reaction_pt(self):
         """"""
@@ -301,30 +301,30 @@ class Modification(Reaction):
 
         scomp = self.get_substrate_complex('LR')
         if scomp:
-            slmol = scomp.get_molecules(lmol.name, lmol.mid)[0] 
-            srmol = scomp.get_molecules(rmol.name, rmol.mid)[0] 
-            pcomp = scomp.clone()     
-            plmol = pcomp.get_molecules(lmol.name, lmol.mid)[0] 
-            prmol = pcomp.get_molecules(rmol.name, rmol.mid)[0] 
+            slmol = scomp.get_molecules(lmol.name, lmol.mid)[0]
+            srmol = scomp.get_molecules(rmol.name, rmol.mid)[0]
+            pcomp = scomp.clone()
+            plmol = pcomp.get_molecules(lmol.name, lmol.mid)[0]
+            prmol = pcomp.get_molecules(rmol.name, rmol.mid)[0]
             prmol.add_modification(self.to_change)
-            plmol.remove_modification(self.to_change) 
+            plmol.remove_modification(self.to_change)
 
-            self.product_complexes += [pcomp]    
+            self.product_complexes += [pcomp]
         else:
             srcomp = self.get_substrate_complex('R')
-            srmol = srcomp.get_molecules(rmol.name, rmol.mid)[0]        
+            srmol = srcomp.get_molecules(rmol.name, rmol.mid)[0]
             prcomp = srcomp.clone()
             prmol = prcomp.get_molecules(rmol.name, rmol.mid)[0]
             prmol.add_modification(self.to_change)
 
             slcomp = self.get_substrate_complex('L')
-            slmol = slcomp.get_molecules(lmol.name, lmol.mid)[0]        
+            slmol = slcomp.get_molecules(lmol.name, lmol.mid)[0]
             plcomp = slcomp.clone()
             plmol = plcomp.get_molecules(lmol.name, lmol.mid)[0]
-            plmol.remove_modification(self.to_change)        
+            plmol.remove_modification(self.to_change)
 
             self.product_complexes += [prcomp, plcomp]
-   
+
 
     def get_sp_state(self):
         """"""
@@ -332,12 +332,12 @@ class Modification(Reaction):
 
     def get_product_contingency(self):
         """
-        Returns a contingency that describes what is 
+        Returns a contingency that describes what is
         prodused/destroyed within a reaction.
         """
         if '+' in self.rtype or self.rtype in ['pt', 'gap']:
             return Contingency(self.name, '!', self.to_change)
-        elif '-' in self.rtype or self.rtype in ['ap', 'gef', 'cut']: 
+        elif '-' in self.rtype or self.rtype in ['ap', 'gef', 'cut']:
             return Contingency(self.name, 'x', self.to_change)
 
     def get_source_contingency(self):
@@ -346,12 +346,12 @@ class Modification(Reaction):
         """
         if '+' in self.rtype or self.rtype in ['pt', 'gap']:
             return Contingency(self.name, 'x', self.to_change)
-        elif '-' in self.rtype or self.rtype in ['ap', 'gef', 'cut']: 
+        elif '-' in self.rtype or self.rtype in ['ap', 'gef', 'cut']:
             return Contingency(self.name, '!', self.to_change)
 
 class SyntDeg(Reaction):
     """
-    Reactions: 
+    Reactions:
     trsc (trancsription)
     trsl (translation)
     deg (degradation)
@@ -363,7 +363,7 @@ class SyntDeg(Reaction):
         - polymerase
         - ribosom, mRNA
         A substrate complex is returned.
-        (it is the same as product but has different _id)    
+        (it is the same as product but has different _id)
         """
         if self.rtype in ['trsc', 'deg']:
             lcompl = self.get_substrate_complex('L')
@@ -378,7 +378,7 @@ class SyntDeg(Reaction):
         if self.rtype == 'trsc':
             rcomp = self.get_substrate_complex('R')
             self.substrat_complexes.remove(rcomp)
-            rcomp.molecules[0].name += 'mRNA' 
+            rcomp.molecules[0].name += 'mRNA'
             rcomp.side = 'Z'
             self.product_complexes += self.substrat_complexes
             self.product_complexes.append(rcomp)
@@ -387,17 +387,17 @@ class SyntDeg(Reaction):
             rcomp = self.get_substrate_complex('R')
             self.substrat_complexes.remove(rcomp)
             new_comp = rcomp.clone()
-            new_comp.molecules[0].name += 'mRNA' 
+            new_comp.molecules[0].name += 'mRNA'
             rcomp.side = 'Z'
             self.substrat_complexes.append(new_comp)
-            self.product_complexes.append(new_comp) 
+            self.product_complexes.append(new_comp)
         elif self.rtype == 'deg':
             lcomp = self.get_substrate_complex('L')
-            self.product_complexes.append(lcomp) 
+            self.product_complexes.append(lcomp)
             rcomp = self.get_substrate_complex('R').clone()
             rcomp.remove_molecule(self.right_reactant)
             if rcomp.molecules:
-                self.product_complexes.append(rcomp) 
+                self.product_complexes.append(rcomp)
         elif self.rtype == 'produce':
             rcomp = self.get_substrate_complex('R')
             self.substrat_complexes.remove(rcomp)
@@ -415,7 +415,7 @@ class Relocalisation(Reaction):
         Returns complex that doesn't change during reaction:
         - channel
         - transporter
-        The substrate complex is returned 
+        The substrate complex is returned
         (the same as product but different _id).
         """
         lcompl = self.get_substrate_complex('L')
@@ -427,11 +427,11 @@ class Relocalisation(Reaction):
         """
         Runs relocalisation reaction.
         Adds product complexes.
-        Changes loc attrib for localisation of right molecule. 
+        Changes loc attrib for localisation of right molecule.
         """
         rmol = self.right_reactant
         lmol = self.left_reactant
-        srcomp = self.get_substrate_complex('LR') or self.get_substrate_complex('R')        
+        srcomp = self.get_substrate_complex('LR') or self.get_substrate_complex('R')
         prcomp = srcomp.clone()
         prmol = prcomp.get_molecules(rmol.name, rmol.mid)[0]
         prmol.localisation.loc = True

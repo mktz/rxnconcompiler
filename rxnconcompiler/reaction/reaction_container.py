@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 
 """
-Module reaction_container.py 
+Module reaction_container.py
 containes classes that store the reactions for the entire rxncon system.
 
-Class ReactionContainer(list) - container for alternative reactions 
-                                (e.g. reaction that has boolean, 
+Class ReactionContainer(list) - container for alternative reactions
+                                (e.g. reaction that has boolean,
                                 complex or K+/K- contingencies).
                                 Stores one ore more Reaction objects.
-Class ReactionPool(dict)      - dictionary for all ReactionContainers 
-                                present in the system. 
+Class ReactionPool(dict)      - dictionary for all ReactionContainers
+                                present in the system.
 """
 
 class ReactionContainer(list):
@@ -35,7 +35,7 @@ class ReactionContainer(list):
         """
         @return: name and number of reactions in the container.
         """
-        return "ReacionConteiner for %s: %i reactions present" % (self.name, len(self)) 
+        return "ReacionConteiner for %s: %i reactions present" % (self.name, len(self))
 
     def add_reaction(self, reaction):
         """
@@ -44,7 +44,7 @@ class ReactionContainer(list):
         @type reaction:  Reaction object
         @param reaction: Reaction to add.
         """
-        # TODO: check whether it is reaction. 
+        # TODO: check whether it is reaction.
         # TODO: check whether it belongs to the container (same name).
         # TODO: check whether id is free.
         if len(self) != 0:
@@ -59,7 +59,7 @@ class ReactionContainer(list):
         else:
             reaction.rid = self.rid
         self.append(reaction)
-  
+
     def update_rid(self, new_id):
         """
         Changs conteiner.rid and rid of each reaction.
@@ -112,7 +112,7 @@ class ReactionContainer(list):
         Requirements common for all reactions in the container.
 
         @rtype:  list of Contingency objects.
-        @return: intersection of contingencies (context) 
+        @return: intersection of contingencies (context)
                  read from all reaction object.
         """
         all_cont = []
@@ -137,14 +137,14 @@ class ReactionContainer(list):
     @property
     def highest_subrate(self):
         """
-        For ich reaction chaecks all rates. 
+        For ich reaction chaecks all rates.
         From all rates checks which number after '_', is the highest.
         If reaction has only single rate returns 0.
         Returns int.
 
         e.g.
         kf1_1, kr1_1; kf1_2, kr1_2; kf1_3, kr1_3 ---> 3
-        k1; k1 ---> 0 
+        k1; k1 ---> 0
         """
         all_subrates = []
         for reaction in self:
@@ -159,7 +159,7 @@ class ReactionContainer(list):
         Removes all reactions.
         """
         while self:
-            self.pop()    
+            self.pop()
 
 
 class ReactionPool(dict):
@@ -245,7 +245,7 @@ class ReactionPool(dict):
                 if cont.state.components[0].name == state.components[0].name:
                     if cont.state.modifier == state.modifier:
                         result.append(cont.state)
-        return result 
+        return result
 
     def find_relocalisation_product(self, state):
         """
